@@ -60,10 +60,12 @@ public class FormationAlternativeEvolutionaryOperator implements
 	public List<FormationAlternative> apply(
 			List<FormationAlternative> population, Random rand) {
 
+		log.finer("have to evolve " + population.size());
 		List<FormationAlternative> newPop = new ArrayList<FormationAlternative>();
 		// blockList.addAll(population);
 		for (int i = 0; i < population.size(); i++) {
 			int decider = rand.nextInt(2);
+			FormationSolution fsOrig = population.get(i).getFormation();
 			FormationSolution fs = new FormationSolution();
 			if (decider == 0) {
 				for (Component c : solutionSpace.keySet())
@@ -71,19 +73,27 @@ public class FormationAlternativeEvolutionaryOperator implements
 							new ArrayList<ComponentSolution>(solutionSpace
 									.get(c)).get(rand.nextInt(solutionSpace
 									.get(c).size())));
+				log.finer("substituted all components");
 			} else {
-				fs = population.get(i).getFormation();
-				int cs = rand.nextInt(fs.getComponentSolutions().size());
 
-				Component c = fs.getComponentSolutions().get(cs).getComponent();
+				int csRand = rand
+						.nextInt(fsOrig.getComponentSolutions().size());
+
+				for (ComponentSolution cs : fsOrig.getComponentSolutions())
+					fs.getComponentSolutions().add(cs);
+
+				Component c = fs.getComponentSolutions().get(csRand)
+						.getComponent();
 
 				fs.getComponentSolutions()
-						.set(cs,
+						.set(csRand,
 								new ArrayList<ComponentSolution>(solutionSpace
 										.get(c)).get(rand.nextInt(solutionSpace
 										.get(c).size())));
-
+				log.finer("substituted component " + c);
 			}
+			log.fine("evolved " + fsOrig + " to new formation solution " + fs);
+
 			// create formation alternative with network costs
 
 			double networkSendValue = 0D;
@@ -150,16 +160,31 @@ public class FormationAlternativeEvolutionaryOperator implements
 			fs.getAttributes()
 					.add(new Attribute<Double>(EFormationValueAttribute.VALUE,
 							value));
-			FormationAlternative fa = new FormationAlternative("Formation_"
-					+ new Date().getTime(), fs);
 
-			// if (!blockList.contains(fa))
+			String secName = "";
+			for (ComponentSolution cs : fs.getComponentSolutions())
+				secName += "|"
+						+ cs.getComponent().getName()
+						+ "=["
+						+ cs.getCombinationTotalValue().getAppliance()
+								.getName() + "->"
+						+ cs.getCombinationTotalValue().getService().getName()
+						+ "]|";
+			FormationAlternative fa = new FormationAlternative("Formation_"
+					+ secName, fs);
+
 			newPop.add(fa);
-			// blockList.add(fa);
 		}
 
-		log.fine("evolved population from given " + population + " to "
+		log.finer("evolved population from given " + population + " to "
 				+ newPop);
+		List<FormationAlternative> populationDiff = new ArrayList<FormationAlternative>(
+				newPop);
+		populationDiff.removeAll(population);
+		System.out.println("evolved population of " + newPop.size()
+				+ " differs in " + populationDiff.size() + " ("
+				+ (100 * populationDiff.size() / population.size())
+				+ "%) of soldiers.");
 		return newPop;
 	}
 }

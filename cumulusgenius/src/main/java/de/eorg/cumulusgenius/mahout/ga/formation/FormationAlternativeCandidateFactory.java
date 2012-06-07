@@ -127,14 +127,23 @@ public class FormationAlternativeCandidateFactory implements
 					.add(new Attribute<Double>(EFormationValueAttribute.VALUE,
 							value));
 
+			String secName = "";
+			for (ComponentSolution cs : fs.getComponentSolutions())
+				secName += "|"
+						+ cs.getComponent().getName()
+						+ "=["
+						+ cs.getCombinationTotalValue().getAppliance()
+								.getName() + "->"
+						+ cs.getCombinationTotalValue().getService().getName()
+						+ "]|";
 			FormationAlternative fa = new FormationAlternative("Formation_"
-					+ new Date().getTime(), fs);
+					+ secName, fs);
 			if (!initPop.contains(fa))
 				initPop.add(fa);
 
 		}
 
-		System.out.println("generated population from given " + reuse + " result "
+		log.fine("generated population from given " + reuse + " result "
 				+ initPop);
 		return initPop;
 	}

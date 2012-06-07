@@ -47,7 +47,7 @@ public class FormationAlternativeTerminator implements TerminationCondition {
 		double solutionSpaceSize = Math.pow(new ArrayList<ComponentSolution>(
 				solutionSpace.values().iterator().next()).size(), solutionSpace
 				.size());
-		System.out.println("sizes: solutionSpace " + solutionSpaceSize + ", population "
+		log.fine("sizes: solutionSpace " + solutionSpaceSize + ", population "
 				+ populationData.getPopulationSize() + ", generation "
 				+ populationData.getGenerationNumber() + ", max generations "
 				+ (solutionSpaceSize / populationData.getPopulationSize()));
@@ -56,9 +56,10 @@ public class FormationAlternativeTerminator implements TerminationCondition {
 		// solutionSpace.size()) - blockList.size() <
 		// populationData.getPopulationSize()
 		return populationData.getElapsedTime() > 5 * 60 * 1000
-		// || populationData.getGenerationNumber() > 500
+				// || populationData.getGenerationNumber() > 500
+				|| solutionSpaceSize == populationData.getPopulationSize()
 				|| populationData.getGenerationNumber() > solutionSpaceSize
-						/ populationData.getPopulationSize();
+						/ populationData.getPopulationSize() * 2;
 	}
 
 }

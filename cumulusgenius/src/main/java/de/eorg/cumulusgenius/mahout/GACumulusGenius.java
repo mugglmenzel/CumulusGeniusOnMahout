@@ -202,23 +202,21 @@ public class GACumulusGenius {
 								formationDecision)),
 				new FormationAlternativeSelectionStrategy(), new Random());
 
-		int populationSize = GA_POPULATION_SIZE > Math.pow(
-				new ArrayList<ComponentSolution>(solutionSpace.values()
-						.iterator().next()).size(), solutionSpace.size()) ? new Double(
-				Math.pow(new ArrayList<ComponentSolution>(solutionSpace
-						.values().iterator().next()).size(),
-						solutionSpace.size())).intValue() : GA_POPULATION_SIZE;
-		int eliteCount = GA_ELITE_FACTOR * GA_POPULATION_SIZE > Math.pow(
-				new ArrayList<ComponentSolution>(solutionSpace.values()
-						.iterator().next()).size(), solutionSpace.size()) ? new Double(
-				Math.ceil(Math.pow(new ArrayList<ComponentSolution>(
-						solutionSpace.values().iterator().next()).size(),
-						solutionSpace.size())
-						* GA_ELITE_FACTOR)).intValue() : new Double(
-				GA_ELITE_FACTOR * GA_POPULATION_SIZE).intValue();
+		int compSolutionsSize = new ArrayList<ComponentSolution>(solutionSpace
+				.values().iterator().next()).size();
+		int populationSize = GA_POPULATION_SIZE > Math.pow(compSolutionsSize,
+				solutionSpace.size()) ? new Double(Math.pow(compSolutionsSize,
+				solutionSpace.size())).intValue() : GA_POPULATION_SIZE;
+		int eliteCount = new Double(Math.ceil(populationSize * GA_ELITE_FACTOR))
+				.intValue();
+		double solutionSpaceSize = Math.pow(compSolutionsSize,
+				solutionSpace.size());
 
 		System.out.println("Calulating GA with population of " + populationSize
-				+ ", identifying " + eliteCount + " elite soldiers.");
+				+ " identifying " + eliteCount + " elite soldiers from "
+				+ solutionSpaceSize + " solutions in "
+				+ Math.ceil(solutionSpaceSize / populationSize * 2)
+				+ " generations.");
 		List<EvaluatedCandidate<FormationAlternative>> elite = stee
 				.evolvePopulation(populationSize, eliteCount,
 						new FormationAlternativeTerminator(solutionSpace));
@@ -291,8 +289,8 @@ public class GACumulusGenius {
 			long startTimeFormationFull = new Date().getTime();
 			fd = createFormationDecisionAlternatives(fd, fs);
 
-			List<Evaluation> formationEvaluations = createFormationEvaluations(fd
-					.getAlternatives());
+			List<FormationAlternative> formAlts = fd.getAlternatives();
+			List<Evaluation> formationEvaluations = createFormationEvaluations(formAlts);
 
 			long endTimeFormationFull = new Date().getTime();
 			System.out.println("Formation Solutions Model took "
