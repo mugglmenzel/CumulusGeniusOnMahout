@@ -68,7 +68,7 @@ public class EvalMapper extends
 		evaluator = StringUtils.fromString(evlstr);
 
 		population = new ArrayList<Object>();
-		String inputPath = context.getConfiguration().get("mapred.input.dir");
+		String inputPath = conf.get("mapred.input.dir");
 		log.info("reading population from " + inputPath);
 		FSDataInputStream in = FileSystem.get(context.getConfiguration()).open(
 				new Path(inputPath, "population"));
